@@ -1,0 +1,38 @@
+name: CI/CD to DEV ENV
+
+on:
+  pull_request:
+    branches:
+      - 'master'
+
+permissions:
+  # From
+  # https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services#adding-permissions-settings
+  id-token: write
+  contents: read
+
+# This workflow should run only once per PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  fail_if_pull_request_is_draft:
+    if: github.event.pull_request.draft == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'exit_if_pull_request_is_draft'
+        run: |
+          echo "::error:: PR is in draft"
+          exit 1
+
+  changed-files:
+    name: 'Get Changed Files'
+    needs: fail-if-pull-request-is-draft
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout head: ${{ github.head_ref }}'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
