@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: 'exit_if_pull_request_is_draft'
         run: |
-          if [[ ${{ github.event.pull_request.draft }} ]]; then
+          if [[ ${{ github.event.pull_request.draft }} == 'true' ]]; then
             echo "::error:: PR is in draft"
             exit 1
           else
