@@ -23,8 +23,12 @@ jobs:
     steps:
       - name: 'exit_if_pull_request_is_draft'
         run: |
-          echo "::error:: PR is in draft"
-          exit 1
+          if [[ ${{ github.event.pull_request.draft }} ]]; then
+            echo "::error:: PR is in draft"
+            exit 1
+          else
+            echo "::ok:: PR is NOT in draft"
+          fi
 
   changed-files:
     name: 'Get Changed Files'
